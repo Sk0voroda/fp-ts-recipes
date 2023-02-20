@@ -1,4 +1,5 @@
 - [Basics](basics.md)
+- [Options](options.md)
 - [Async: Promises and Tasks](async.md)
 - [Determine equality](equality.md)
 - [Determine order](ordering.md)

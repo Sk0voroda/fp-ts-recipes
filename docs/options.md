@@ -144,10 +144,10 @@ const capitalizeName = pipe(
 ); // -> { _tag: 'Some', value: 'Spike' }
 ```
 
-To update values in the array, the `map` function from `fp-ts/Array` can be used.
+To update values in the array, the `map` function from `fp-ts/Array` can be used. It will return a new array of double `Option<number>` values, keeping `None.`
 
 ```ts
-import { some, map, chain } from "fp-ts/Option";
+import { some, none, map, chain } from "fp-ts/Option";
 import { pipe } from "fp-ts/function";
 import * as A from "fp-ts/Array";
 
@@ -155,7 +155,23 @@ const double = (x: number) => x * x;
 
 const values = [O.some(1), O.none, O.some(4), O.some(5)];
 
-const doubleValues = pipe(values, A.map(O.map(double))); // -> [O.some(2), O.none, O.some(8), O.some(10)];
+const doubleValues = pipe(values, A.map(map(double))); // -> [O.some(2), O.none, O.some(8), O.some(10)];
 ```
 
-It will return a new array of double `Option<number>` values, keeping `None.`
+In same way we can use `filter` on array.
+
+```ts
+import { some, none, filter } from "fp-ts/Option";
+import { pipe } from "fp-ts/function";
+import * as A from "fp-ts/Array";
+
+const notNull = (x: number) => x > 0;
+
+const values = [O.some(0), O.none, O.some(4), O.some(5)];
+
+const doubleValues = pipe(values, A.map(filter(notNull))); // -> [O.none, O.none, O.some(4), O.some(5)];
+```
+
+### Extracting values from `array`
+
+To extract values from array of `Option`, we can use functions `compact`, `filterMap`

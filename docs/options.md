@@ -2,7 +2,7 @@
 
 ## Basics
 
-The `Option<A>` type in **fp-ts** is a monadic container that represents the possibility of a value being present or absent. It has two states, `Some<A>` and `None`. When the value of type `A` is present, `Option<A>` is an instance of `Some<A>` and contains the value. Conversely, when the value is absent, `Option<A>` is `None`.
+The `Option<A>` type in **fp-ts** is a monadic container that represents the possibility of a value being present or absent. It has two states, `Some<A>` and `None.` When the value of type `A` is present, `Option<A>` is an instance of `Some<A>` and contains the value. Conversely, when the value is absent, `Option<A>` is `None`.
 
 ## Build an Option
 
@@ -28,7 +28,7 @@ fromNullable(null); // -> none
 fromNullable(1); // -> some(1)
 ```
 
-Also `fromPredicate` can be used to build `Option` based on the given predicate.
+Also, `fromPredicate` can be used to build `Option` based on the given predicate.
 
 ```ts
 import { none, some, fromPredicate } from "fp-ts/Option";
@@ -41,7 +41,7 @@ toOption(1); // -> some(1)
 
 ## Extract value from `Option`
 
-Use `toNullable`, `toUndefined` or `getOrElse` functions to extracts value out of `Option` structure, if it exist. `getOrElse` let's you define default return value like `0` for `none` case.
+Use `toNullable`, `toUndefined` or `getOrElse` functions to extract value out of `Option` structure, if it exist. `getOrElse` lets you define a default return value like `0` for `None` case.
 
 ```ts
 import { none, some, toUndefined, toNullable, getOrElse } from "fp-ts/Option";
@@ -75,9 +75,9 @@ O.match(
 
 ## Change `Option` value
 
-We can change the value contained within an `Option` data type in **fp-ts** without the need to extract it by utilizing functions such as `map`, `chain` and `filter`. If an `Option` data type contains `None`, the functions would not be applied.
+In **fp-ts**, it is good practice to alter the value within an `Option` by utilizing functions such as `map`, `chain`, and `filter`, without requiring the value to be extracted. If the `Option` value is `None`, these functions won't have any effect.
 
-### Map
+### `Map`
 
 ```ts
 import { none, some, map } from "fp-ts/Option";
@@ -101,7 +101,7 @@ const isOptionNonZero = filter(nonZero)(some(-1)); // -> none
 
 ### `Chain`
 
-temporart
+The `Chain` allows you to chain operations that may or may not return a value. If the function returns another `Option` instance, the values combined into a single `Option` instance. If the function returns `None,` the entire chain is short-circuited and `None` is returned. It prevents us from situations when the return value is of type `Option<Option>.`
 
 ```ts
 import { none, some, chain } from "fp-ts/Option";
@@ -113,7 +113,7 @@ chain(nonZero)(some(1)); // -> some(1)
 
 ### `Match`
 
-You also can use `match` to get value from `Option`, apply some function to it and return non `Option` value.
+You also can use `match` to get value from `Option`, apply some function to it, and return non `Option` value.
 
 ```ts
 import { none, some, match } from "fp-ts/Option";
@@ -123,14 +123,39 @@ const double = (x: number) => x * x;
 match(() => 0, double)(some(2)); // -> 4
 ```
 
-### Combine with `pipe`
+## Examples using `Option`
 
-import { none, some, filter } from "fp-ts/Option";
+We can combine `chain` and `map` using `pipe` to get value out of `user` and capitalize it.
 
 ```ts
-import { none, some, map, filter, chain } from "fp-ts/Option";
-const double = (x: number) => x * x;
-const nonZero = (x: number) => (x === 0 ? none : some(x));
+import { some, map, chain } from "fp-ts/Option";
+import { pipe } from "fp-ts/function";
 
-const;
+const capitalize = (word: string) => word.charAt(0).toUpperCase() + word.slice(1)
+
+const user = some({
+  name: some("spike"),
+})
+
+const capitalizeName = pipe(
+  user,
+  O.chain(user => user.name)
+  O.map(capitalize)
+); // -> { _tag: 'Some', value: 'Spike' }
 ```
+
+To update values in the array, the `map` function from `fp-ts/Array` can be used.
+
+```ts
+import { some, map, chain } from "fp-ts/Option";
+import { pipe } from "fp-ts/function";
+import * as A from "fp-ts/Array";
+
+const double = (x: number) => x * x;
+
+const values = [O.some(1), O.none, O.some(4), O.some(5)];
+
+const doubleValues = pipe(values, A.map(O.map(double))); // -> [O.some(2), O.none, O.some(8), O.some(10)];
+```
+
+It will return a new array of double `Option<number>` values, keeping `None.`

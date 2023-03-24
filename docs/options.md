@@ -128,13 +128,13 @@ match(() => 0, double)(some(2)); // -> 4
 We can combine `chain` and `map` using `pipe` to get value out of `user` and capitalize it.
 
 ```ts
-import { some, map, chain } from "fp-ts/Option";
+import * as O from "fp-ts/Option";
 import { pipe } from "fp-ts/function";
 
 const capitalize = (word: string) => word.charAt(0).toUpperCase() + word.slice(1)
 
-const user = some({
-  name: some("spike"),
+const user = O.some({
+  name: O.some("spike"),
 })
 
 const capitalizeName = pipe(
@@ -144,24 +144,41 @@ const capitalizeName = pipe(
 ); // -> { _tag: 'Some', value: 'Spike' }
 ```
 
-To update values in the array, the `map` function from `fp-ts/Array` can be used. It will return a new array of double `Option<number>` values, keeping `None.`
+When working with two `Option` values inside `pipe` in **fp-ts**, the `Do` notation can be used to simplify the code and avoid nested function calls.
 
 ```ts
-import { some, none, map, chain } from "fp-ts/Option";
+import * as O from "fp-ts/Option";
 import { pipe } from "fp-ts/function";
+
+const userName = O.some("jack");
+const userLastname = O.some("black");
+
+const fullName = pipe(
+  O.Do,
+  O.bind("name", () => userName),
+  O.bind("lastname", () => userLastname),
+  O.map(({ name, lastname }) => `${name} ${lastname}`)
+); // -> { _tag: 'Some', value: 'jack black' }
+```
+
+When working with an array of `Option,` the `map` function from `fp-ts/Array` can be used. Here in an example, it will return a new array of double `Option<number>` values, keeping `None.`
+
+```ts
+import * as O from "fp-ts/Option";
 import * as A from "fp-ts/Array";
+import { pipe } from "fp-ts/function";
 
 const double = (x: number) => x * x;
 
-const values = [O.some(1), O.none, O.some(4), O.some(5)];
+const values = [O.some(0), O.none, O.some(4), O.some(5)];
 
-const doubleValues = pipe(values, A.map(map(double))); // -> [O.some(2), O.none, O.some(8), O.some(10)];
+const doubleValues = pipe(values, A.map(O.map(double))); // -> [O.some(0), O.none, O.some(8), O.some(10)];
 ```
 
-In same way we can use `filter` on array.
+In the same way, `filter` can be used.
 
 ```ts
-import { some, none, filter } from "fp-ts/Option";
+import * as O from "fp-ts/Option";
 import { pipe } from "fp-ts/function";
 import * as A from "fp-ts/Array";
 
@@ -169,9 +186,17 @@ const notNull = (x: number) => x > 0;
 
 const values = [O.some(0), O.none, O.some(4), O.some(5)];
 
-const doubleValues = pipe(values, A.map(filter(notNull))); // -> [O.none, O.none, O.some(4), O.some(5)];
+const doubleValues = pipe(values, A.map(O.filter(notNull))); // -> [O.none, O.none, O.some(4), O.some(5)];
 ```
 
-### Extracting values from `array`
+To unwrap array of `Option` into plain array, function `compact`, `filterMap` can be used.
 
-To extract values from array of `Option`, we can use functions `compact`, `filterMap`
+```ts
+import * as O from "fp-ts/Option";
+import { pipe } from "fp-ts/function";
+import * as A from "fp-ts/Array";
+
+const values = [O.some(0), O.none, O.some(4), O.some(5)];
+
+const doubleValues = pipe(values, A.compact); // -> [O.none, O.none, O.some(4), O.some(5)];
+```

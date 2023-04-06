@@ -189,7 +189,7 @@ const values = [O.some(0), O.none, O.some(4), O.some(5)];
 const doubleValues = pipe(values, A.map(O.filter(notNull))); // -> [O.none, O.none, O.some(4), O.some(5)];
 ```
 
-To unwrap array of `Option` into plain array, function `compact`, `filterMap` can be used.
+Function `compact` from `fp-ts/Array` can be used to uwrap values from array of `Opton.` If array containes `None`, it will be removed.
 
 ```ts
 import * as O from "fp-ts/Option";
@@ -198,5 +198,5 @@ import * as A from "fp-ts/Array";
 
 const values = [O.some(0), O.none, O.some(4), O.some(5)];
 
-const doubleValues = pipe(values, A.compact); // -> [O.none, O.none, O.some(4), O.some(5)];
+const doubleValues = pipe(values, A.compact); // -> [0, 4, 5];
 ```
